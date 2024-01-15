@@ -11,8 +11,8 @@ impl Error for FieldError { }
 impl Display for FieldError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            FieldError::InvalidNumber(n, p) => write!(f, "FieldError::InvalidNumber({},{})", n, p),
-            FieldError::MismatchPrimes(l, r) => write!(f, "FieldError::MismatchPrimes({},{})", l, r),
+            FieldError::InvalidNumber(n, p) => write!(f, "FieldError::InvalidNumber(0 <= n < p, n = {}, p = {})", n, p),
+            FieldError::MismatchPrimes(l, r) => write!(f, "FieldError::MismatchPrimes({} != {})", l, r),
         }
     }
 }
