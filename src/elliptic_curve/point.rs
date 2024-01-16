@@ -1,6 +1,7 @@
 use std::ops::Add;
 use super::{Curve, error::PointError};
 
+#[derive(Debug)]
 pub struct Point {
     x: Option<f32>,
     y: Option<f32>,
@@ -9,25 +10,30 @@ pub struct Point {
 
 impl Point {
     pub fn new(x: f32, y: f32, curve: Curve) -> Result<Self, PointError> {
-        if y.powi(2) != x.powi(3) + curve.a * x + curve.b {
-            return Err(PointError::NotOnCurve(x, y, curve));
+        Self::new_point(Some(x), Some(y), curve)
+    }
+
+    fn new_point(x: Option<f32>, y: Option<f32>, curve: Curve) -> Result<Self, PointError> {
+        if let (Some(x), Some(y)) = (x, y) {
+            let lhs = y.powi(2);
+            let rhs = x.powi(3) + curve.a * x + curve.b;
+
+            if (rhs - lhs).abs() > f32::EPSILON.sqrt() {
+                return Err(PointError::NotOnCurve(x, y, curve));
+            }
         }
 
         Ok(
             Self {
-                x: Some(x),
-                y: Some(y),
+                x,
+                y,
                 curve,
             }
         )
     }
 
     pub fn identity(curve: Curve) -> Self {
-        Self {
-            x: None,
-            y: None,
-            curve,
-        }
+        Self::new_point(None, None, curve).unwrap()
     }
 
     pub fn infinity(curve: Curve) -> Self {
@@ -74,13 +80,7 @@ fn add_ne(p1: Point, p2: Point) -> Result<Point, PointError> {
     let x3 = slope.powi(2) - x1 - x2;
     let y3 = (slope * (x1 - x3)) - y1;
 
-    Ok(
-        Point {
-            x: Some(x3),
-            y: Some(y3),
-            curve: p1.curve.clone()
-        }
-    )
+    Point::new_point(Some(x3), Some(y3), p1.curve.clone())
 }
 
 fn add_eq(p: Point) -> Result<Point, PointError> {
@@ -95,17 +95,79 @@ fn add_eq(p: Point) -> Result<Point, PointError> {
     let x3 = slope.powi(2) - (2. * x1);
     let y3 = (slope * (x1 - x3)) - y1;
 
-    Ok(
-        Point {
-            x: Some(x3),
-            y: Some(y3),
-            curve: p.curve.clone(),
-        }
-    )
+    Point::new_point(Some(x3), Some(y3), p.curve.clone())
 }
 
 impl PartialEq for Point {
     fn eq(&self, other: &Self) -> bool {
         self.x == other.x && self.y == other.y && self.curve == other.curve
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::elliptic_curve::Curve;
+    use super::Point;
+
+    #[test]
+    pub fn test_new() {
+        assert!(Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).is_ok());
+    }
+
+    #[test]
+    pub fn test_new_invalid() {
+        assert!(Point::new(1., 1., Curve::new(2., 3.)).is_err());
+    }
+
+    #[test]
+    pub fn test_is_identity() {
+        assert!(Point::identity(Curve::new(2., 3.)).is_identity());
+    }
+
+    #[test]
+    pub fn test_eq() {
+        let p1 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p2 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+
+        assert_eq!(p1, p2)
+    }
+
+    #[test]
+    pub fn test_add() {
+        let p1 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p2 = Point::new(2., (15. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+
+        assert!((p1 + p2).is_ok())
+    }
+
+    #[test]
+    pub fn test_add_invalid() {
+        let p1 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p2 = Point::new(2., (13. as f32).sqrt(), Curve::new(1., 3.)).unwrap();
+
+        assert!((p1 + p2).is_err())
+    }
+
+    #[test]
+    pub fn test_add_eq() {
+        let p1 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p2 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+
+        assert!((p1 + p2).is_ok())
+    }
+
+    #[test]
+    pub fn test_add_identity() {
+        let identity = Point::identity(Curve::new(2., 3.));
+
+        let p1 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p2 = Point::identity(Curve::new(2., 3.));
+
+        assert!((p1 + p2).unwrap() == identity);
+
+        let p1 = Point::identity(Curve::new(2., 3.));
+        let p2 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+
+        assert!((p1 + p2).unwrap() == identity)
     }
 }
