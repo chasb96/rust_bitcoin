@@ -3,23 +3,23 @@ use super::{Curve, error::PointError};
 
 #[derive(Debug)]
 pub struct Point {
-    x: Option<f32>,
-    y: Option<f32>,
+    x: Option<f64>,
+    y: Option<f64>,
     curve: Curve,
 }
 
 impl Point {
-    pub fn new(x: f32, y: f32, curve: Curve) -> Result<Self, PointError> {
+    pub fn new(x: f64, y: f64, curve: Curve) -> Result<Self, PointError> {
         Self::new_point(Some(x), Some(y), curve)
     }
 
-    fn new_point(x: Option<f32>, y: Option<f32>, curve: Curve) -> Result<Self, PointError> {
-        if let (Some(x), Some(y)) = (x, y) {
-            let lhs = y.powi(2);
-            let rhs = x.powi(3) + curve.a * x + curve.b;
+    fn new_point(x: Option<f64>, y: Option<f64>, curve: Curve) -> Result<Self, PointError> {
+        if let (Some(xp), Some(yp)) = (x, y) {
+            let lhs = yp.powi(2);
+            let rhs = xp.powi(3) + curve.a * xp + curve.b;
 
-            if (rhs - lhs).abs() > f32::EPSILON.sqrt() {
-                return Err(PointError::NotOnCurve(x, y, curve));
+            if (rhs - lhs).abs() > f64::EPSILON.sqrt() {
+                return Err(PointError::NotOnCurve(xp, yp, curve));
             }
         }
 
@@ -111,7 +111,7 @@ mod test {
 
     #[test]
     pub fn test_new() {
-        assert!(Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).is_ok());
+        assert!(Point::new(1., (6. as f64).sqrt(), Curve::new(2., 3.)).is_ok());
     }
 
     #[test]
@@ -126,32 +126,32 @@ mod test {
 
     #[test]
     pub fn test_eq() {
-        let p1 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
-        let p2 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p1 = Point::new(1., (6. as f64).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p2 = Point::new(1., (6. as f64).sqrt(), Curve::new(2., 3.)).unwrap();
 
         assert_eq!(p1, p2)
     }
 
     #[test]
     pub fn test_add() {
-        let p1 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
-        let p2 = Point::new(2., (15. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p1 = Point::new(1., (6. as f64).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p2 = Point::new(2., (15. as f64).sqrt(), Curve::new(2., 3.)).unwrap();
 
         assert!((p1 + p2).is_ok())
     }
 
     #[test]
     pub fn test_add_invalid() {
-        let p1 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
-        let p2 = Point::new(2., (13. as f32).sqrt(), Curve::new(1., 3.)).unwrap();
+        let p1 = Point::new(1., (6. as f64).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p2 = Point::new(2., (13. as f64).sqrt(), Curve::new(1., 3.)).unwrap();
 
         assert!((p1 + p2).is_err())
     }
 
     #[test]
     pub fn test_add_eq() {
-        let p1 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
-        let p2 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p1 = Point::new(1., (6. as f64).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p2 = Point::new(1., (6. as f64).sqrt(), Curve::new(2., 3.)).unwrap();
 
         assert!((p1 + p2).is_ok())
     }
@@ -160,13 +160,13 @@ mod test {
     pub fn test_add_identity() {
         let identity = Point::identity(Curve::new(2., 3.));
 
-        let p1 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p1 = Point::new(1., (6. as f64).sqrt(), Curve::new(2., 3.)).unwrap();
         let p2 = Point::identity(Curve::new(2., 3.));
 
         assert!((p1 + p2).unwrap() == identity);
 
         let p1 = Point::identity(Curve::new(2., 3.));
-        let p2 = Point::new(1., (6. as f32).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p2 = Point::new(1., (6. as f64).sqrt(), Curve::new(2., 3.)).unwrap();
 
         assert!((p1 + p2).unwrap() == identity)
     }

@@ -3,7 +3,7 @@ use super::Curve;
 
 #[derive(Debug)]
 pub enum PointError {
-    NotOnCurve(f32, f32, Curve),
+    NotOnCurve(f64, f64, Curve),
     MismatchCurves(Curve, Curve),
     DivideByZero,
 }

@@ -5,12 +5,12 @@ mod point;
 
 #[derive(Clone, Debug)]
 pub struct Curve {
-    a: f32,
-    b: f32,
+    a: f64,
+    b: f64,
 }
 
 impl Curve {
-    pub fn new(a: f32, b: f32) -> Self {
+    pub fn new(a: f64, b: f64) -> Self {
         Self {
             a,
             b,
