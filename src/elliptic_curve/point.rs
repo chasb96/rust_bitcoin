@@ -1,5 +1,5 @@
 use std::ops::Add;
-use super::{Curve, error::PointError};
+use super::{Curve, error::PointError, float_eq};
 
 #[derive(Debug)]
 pub struct Point {
@@ -100,7 +100,14 @@ fn add_eq(p: Point) -> Result<Point, PointError> {
 
 impl PartialEq for Point {
     fn eq(&self, other: &Self) -> bool {
-        self.x == other.x && self.y == other.y && self.curve == other.curve
+        match (self.x, other.x, self.y, other.y) {
+            (Some(x1), Some(x2), Some(y1), Some(y2)) => 
+                float_eq(x2, x1) && 
+                float_eq(y2, y1) && 
+                self.curve == other.curve,
+            (None, None, None, None) => self.curve == other.curve,
+            _ => false,
+        }
     }
 }
 

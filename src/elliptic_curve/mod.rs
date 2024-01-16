@@ -1,7 +1,16 @@
-use std::fmt::Display;
+use std::{fmt::Display, cmp::Ordering};
 
 mod error;
 mod point;
+
+fn float_eq(l: f64, r: f64) -> bool {
+    match l.partial_cmp(&r) {
+        Some(Ordering::Less) => r - l <= f64::EPSILON,
+        Some(Ordering::Equal) => true,
+        Some(Ordering::Greater) => l - r <= f64::EPSILON,
+        None => false,
+    }
+}
 
 #[derive(Clone, Debug)]
 pub struct Curve {
@@ -26,6 +35,6 @@ impl Display for Curve {
 
 impl PartialEq for Curve {
     fn eq(&self, other: &Self) -> bool {
-        self.a == other.a && self.b == other.b
+        float_eq(self.a, other.a) && float_eq(self.b, other.b)
     }
 }
