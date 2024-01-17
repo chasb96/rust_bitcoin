@@ -86,7 +86,7 @@ fn add_ne(p1: Point, p2: Point) -> Result<Point, PointError> {
 fn add_eq(p: Point) -> Result<Point, PointError> {
     let (x1, y1, a) = (p.x.unwrap(), p.y.unwrap(), p.curve.a);
 
-    if y1 == 0. {
+    if float_eq(y1, 0.) {
         return Ok(Point::infinity(p.curve.clone()))
     }
 
