@@ -112,7 +112,13 @@ impl Div for FieldElement {
             return Err(FieldError::MismatchPrimes(self.prime, rhs.prime));
         }
 
-        // More memory efficient than: rhs.number.pow(self.prime - 2)
+        // More memory efficient than: `rhs.number.pow(self.prime - 2) % self.prime`
+        //  allowing the value to be computed without worrying about multiply
+        //  overflow.
+        //
+        // Since `a ** b` can be written as `a * a .. * a`, we can take advantage of
+        //  `(a * b) % m == (a % m) * (b % m) % m` by doing effectively 
+        //  `(a % m) % m * (a % m) % m .. * (a % m) % m`
         let rhs_exp = {
             let (mut c, mut e_prime) = (1, 0);
 
@@ -127,7 +133,14 @@ impl Div for FieldElement {
 
         Ok(
             FieldElement {
-                // More memory efficient than: (self.number * rhs.number.pow(self.prime - 2)) % self.prime,
+                // More memory efficient than: 
+                //      `(self.number * rhs.number.pow(self.prime - 2)) % self.prime`
+                //  allowing computation without worrying about multiply overflow.
+                //
+                // Takes advantage of `(a * b) % m == (a % m) * (b % m) % m`. We 
+                //  compute the right hand side ensuring we never execute (a * b)
+                //  which could overflow. Since `rhs_exp` is already the remainder,
+                //  we don't need to remainder it.
                 number: ((self.number % self.prime) * rhs_exp) % self.prime,
                 prime: self.prime,
             }
