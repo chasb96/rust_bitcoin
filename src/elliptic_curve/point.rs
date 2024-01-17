@@ -161,7 +161,7 @@ mod test {
         let b = FieldElement::new(3, prime).unwrap();
         let curve = Curve::new(a, b);
 
-        let p1 = Point::new(x, y, curve).unwrap();
+        let p1 = Point::new(x, y, curve.clone()).unwrap();
         let p2 = Point::new(x, y, curve).unwrap();
 
         assert_eq!(p1, p2)
@@ -180,7 +180,7 @@ mod test {
         let b = FieldElement::new(3, prime).unwrap();
         let curve = Curve::new(a, b);
 
-        let p1 = Point::new(ax, ay, curve).unwrap();
+        let p1 = Point::new(ax, ay, curve.clone()).unwrap();
         let p2 = Point::new(bx, by, curve).unwrap();
 
         (p1 + p2).unwrap();
@@ -223,7 +223,7 @@ mod test {
         let b = FieldElement::new(3, prime).unwrap();
         let curve = Curve::new(a, b);
 
-        let p1 = Point::new(ax, ay, curve).unwrap();
+        let p1 = Point::new(ax, ay, curve.clone()).unwrap();
         let p2 = Point::new(bx, by, curve).unwrap();
 
         (p1 + p2).unwrap();

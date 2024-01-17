@@ -4,7 +4,7 @@ use crate::field_element::FieldElement;
 mod error;
 mod point;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub struct Curve {
     pub a: FieldElement,
     pub b: FieldElement,
