@@ -2,7 +2,7 @@ use std::ops::Add;
 use crate::field_element::FieldElement;
 use super::{Curve, error::PointError};
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Point {
     x: Option<FieldElement>,
     y: Option<FieldElement>,
@@ -229,18 +229,21 @@ mod test {
         (p1 + p2).unwrap();
     }
 
-    // #[test]
-    // pub fn test_add_identity() {
-    //     let identity = Point::identity(Curve::new(2., 3.));
+    #[test]
+    pub fn test_add_identity() {
+        let prime = 13;
 
-    //     let p1 = Point::new(1., (6. as f64).sqrt(), Curve::new(2., 3.)).unwrap();
-    //     let p2 = Point::identity(Curve::new(2., 3.));
+        let ax = FieldElement::new(3, prime).unwrap();
+        let ay = FieldElement::new(6, prime).unwrap();
 
-    //     assert!((p1 + p2).unwrap() == identity);
+        let a = FieldElement::new(2, prime).unwrap();
+        let b = FieldElement::new(3, prime).unwrap();
+        let curve = Curve::new(a, b);
 
-    //     let p1 = Point::identity(Curve::new(2., 3.));
-    //     let p2 = Point::new(1., (6. as f64).sqrt(), Curve::new(2., 3.)).unwrap();
+        let p = Point::new(ax, ay, curve).unwrap();
+        let identity = Point::identity(Curve::new(a, b));
 
-    //     assert!((p1 + p2).unwrap() == identity)
-    // }
+        assert!((p.clone() + identity.clone()).unwrap().is_identity());
+        assert!((identity + p).unwrap().is_identity());
+    }
 }
