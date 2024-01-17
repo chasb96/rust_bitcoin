@@ -46,6 +46,22 @@ mod test {
 
         let x = FieldElement::new(192, prime).unwrap();
         let y = FieldElement::new(105, prime).unwrap();
-        Point::new(x, y, curve).unwrap();
+        Point::new(x, y, curve.clone()).unwrap();
+
+        let x = FieldElement::new(17, prime).unwrap();
+        let y = FieldElement::new(56, prime).unwrap();
+        Point::new(x, y, curve.clone()).unwrap();
+
+        let x = FieldElement::new(1, prime).unwrap();
+        let y = FieldElement::new(193, prime).unwrap();
+        Point::new(x, y, curve.clone()).unwrap();
+
+        let x = FieldElement::new(200, prime).unwrap();
+        let y = FieldElement::new(119, prime).unwrap();
+        assert!(Point::new(x, y, curve.clone()).is_err());
+
+        let x = FieldElement::new(42, prime).unwrap();
+        let y = FieldElement::new(99, prime).unwrap();
+        assert!(Point::new(x, y, curve).is_err());
     }
 }
