@@ -1,25 +1,18 @@
 use std::{fmt::Display, cmp::Ordering};
 
+use crate::field_element::FieldElement;
+
 mod error;
 mod point;
 
-fn float_eq(l: f64, r: f64) -> bool {
-    match l.partial_cmp(&r) {
-        Some(Ordering::Less) => r - l <= f64::EPSILON,
-        Some(Ordering::Equal) => true,
-        Some(Ordering::Greater) => l - r <= f64::EPSILON,
-        None => false,
-    }
-}
-
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Debug)]
 pub struct Curve {
-    a: f64,
-    b: f64,
+    pub a: FieldElement,
+    pub b: FieldElement,
 }
 
 impl Curve {
-    pub fn new(a: f64, b: f64) -> Self {
+    pub fn new(a: FieldElement, b: FieldElement) -> Self {
         Self {
             a,
             b,
@@ -35,6 +28,25 @@ impl Display for Curve {
 
 impl PartialEq for Curve {
     fn eq(&self, other: &Self) -> bool {
-        float_eq(self.a, other.a) && float_eq(self.b, other.b)
+        self.a == other.a && self.b == other.b
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::field_element::FieldElement;
+    use super::{Curve, point::Point};
+
+
+    #[test]
+    pub fn element_on_curve() {
+        let prime = 223;
+        let a = FieldElement::new(0, prime).unwrap();
+        let b = FieldElement::new(7, prime).unwrap();
+        let curve = Curve::new(a, b);
+
+        let x = FieldElement::new(192, prime).unwrap();
+        let y = FieldElement::new(105, prime).unwrap();
+        Point::new(x, y, curve.clone()).unwrap();
     }
 }

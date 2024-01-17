@@ -1,8 +1,9 @@
-use std::ops::{Add, Sub, Mul, Div};
+use std::{ops::{Add, Sub, Mul, Div}, cmp::Ordering, fmt::Display};
 use self::error::FieldError;
 
-mod error;
+pub mod error;
 
+#[derive(Debug, Copy, Clone)]
 pub struct FieldElement {
     number: u32,
     prime: u32,
@@ -10,14 +11,14 @@ pub struct FieldElement {
 
 impl FieldElement {
     pub fn new(number: u32, prime: u32) -> Result<Self, FieldError> {
-        if number >= prime {
+        if number >= prime as u32 {
             return Err(FieldError::InvalidNumber(number, prime))
         }
 
         Ok(
             Self {
                 number,
-                prime,
+                prime: prime as u32,
             }
         )
     }
@@ -29,6 +30,14 @@ impl FieldElement {
             number: self.number.pow(pow as u32) % self.prime,
             prime: self.prime
         }
+    }
+
+    pub fn number(&self) -> u32 {
+        self.number
+    }
+
+    pub fn prime(&self) -> u32 {
+        self.prime
     }
 }
 
@@ -64,9 +73,9 @@ impl Sub for FieldElement {
         }
 
         let res = match self.number.cmp(&rhs.number) {
-            std::cmp::Ordering::Less => self.prime - ((rhs.number - self.number) % self.prime),
-            std::cmp::Ordering::Equal => 0,
-            std::cmp::Ordering::Greater => (self.number - rhs.number) % self.prime,
+            Ordering::Less => self.prime - ((rhs.number - self.number) % self.prime),
+            Ordering::Equal => 0,
+            Ordering::Greater => (self.number - rhs.number) % self.prime,
         };
 
         Ok(
@@ -103,12 +112,32 @@ impl Div for FieldElement {
             return Err(FieldError::MismatchPrimes(self.prime, rhs.prime));
         }
 
+        // More memory efficient than: rhs.number.pow(self.prime - 2)
+        let rhs_exp = {
+            let (mut c, mut e_prime) = (1, 0);
+
+            while e_prime < (self.prime - 2) {
+                c = (c * rhs.number) % self.prime;
+
+                e_prime += 1;
+            }
+
+            c
+        };
+
         Ok(
             FieldElement {
-                number: (self.number * rhs.number.pow(self.prime - 2)) % self.prime,
+                // More memory efficient than: (self.number * rhs.number.pow(self.prime - 2)) % self.prime,
+                number: ((self.number % self.prime) * rhs_exp) % self.prime,
                 prime: self.prime,
             }
         )
+    }
+}
+
+impl Display for FieldElement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "FieldElement(number = {}, prime = {})", self.number, self.prime)
     }
 }
 

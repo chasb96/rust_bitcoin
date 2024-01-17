@@ -1,11 +1,12 @@
 use std::{error::Error, fmt::Display};
+use crate::field_element::{FieldElement, error::FieldError};
 use super::Curve;
 
 #[derive(Debug)]
 pub enum PointError {
-    NotOnCurve(f64, f64, Curve),
+    NotOnCurve(FieldElement, FieldElement, Curve),
     MismatchCurves(Curve, Curve),
-    DivideByZero,
+    FieldError(FieldError),
 }
 
 impl Error for PointError { }
@@ -15,7 +16,13 @@ impl Display for PointError {
         match self {
             PointError::NotOnCurve(x, y, c) => write!(f, "PointError::NotOnCurve(({}, {}) not on curve {})", x, y, c),
             PointError::MismatchCurves(l, r) => write!(f, "PointError::MismatchCurve({} != {})", l, r),
-            PointError::DivideByZero => write!(f, "PointError::DivideByZero(Attempted to divide by zero)"),
+            PointError::FieldError(e) => write!(f, "PointError::FieldError({})", e),
         }
+    }
+}
+
+impl From<FieldError> for PointError {
+    fn from(value: FieldError) -> Self {
+        Self::FieldError(value)
     }
 }
