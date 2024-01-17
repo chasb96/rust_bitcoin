@@ -119,17 +119,7 @@ impl Div for FieldElement {
         // Since `a ** b` can be written as `a * a .. * a`, we can take advantage of
         //  `(a * b) % m == (a % m) * (b % m) % m` by doing effectively 
         //  `(a % m) % m * (a % m) % m .. * (a % m) % m`
-        let rhs_exp = {
-            let (mut c, mut e_prime) = (1, 0);
-
-            while e_prime < (self.prime - 2) {
-                c = (c * rhs.number) % self.prime;
-
-                e_prime += 1;
-            }
-
-            c
-        };
+        let rhs = (0..(self.prime - 2)).fold(1, |exp, _| (exp * rhs.number) % self.prime);
 
         Ok(
             FieldElement {
@@ -139,9 +129,9 @@ impl Div for FieldElement {
                 //
                 // Takes advantage of `(a * b) % m == (a % m) * (b % m) % m`. We 
                 //  compute the right hand side ensuring we never execute (a * b)
-                //  which could overflow. Since `rhs_exp` is already the remainder,
+                //  which could overflow. Since `rhs` is already the remainder,
                 //  we don't need to remainder it.
-                number: ((self.number % self.prime) * rhs_exp) % self.prime,
+                number: ((self.number % self.prime) * rhs) % self.prime,
                 prime: self.prime,
             }
         )
