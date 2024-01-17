@@ -1,5 +1,4 @@
-use std::{fmt::Display, cmp::Ordering};
-
+use std::fmt::Display;
 use crate::field_element::FieldElement;
 
 mod error;
@@ -47,6 +46,6 @@ mod test {
 
         let x = FieldElement::new(192, prime).unwrap();
         let y = FieldElement::new(105, prime).unwrap();
-        Point::new(x, y, curve.clone()).unwrap();
+        Point::new(x, y, curve).unwrap();
     }
 }
