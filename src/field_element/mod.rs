@@ -123,14 +123,13 @@ impl Div for FieldElement {
 
         Ok(
             FieldElement {
-                // More memory efficient than: 
+                // Since `rhs` is no longer its exponentiated value, we must use
+                //  a different route than 
                 //      `(self.number * rhs.number.pow(self.prime - 2)) % self.prime`
-                //  allowing computation without worrying about multiply overflow.
-                //
-                // Takes advantage of `(a * b) % m == (a % m) * (b % m) % m`. We 
-                //  compute the right hand side ensuring we never execute (a * b)
-                //  which could overflow. Since `rhs` is already the remainder,
-                //  we don't need to remainder it.
+                // 
+                // Because identity `(a * b) % m == (a % m) * (b % m) % m`, and
+                //  since `rhs` is already its remainder, we can calculate the
+                //  value.
                 number: ((self.number % self.prime) * rhs) % self.prime,
                 prime: self.prime,
             }
