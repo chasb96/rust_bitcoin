@@ -118,7 +118,7 @@ impl Div for FieldElement {
         //
         // Since `a ** b` can be written as `a * a .. * a`, we can take advantage of
         //  `(a * b) % m == (a % m) * (b % m) % m` by doing effectively 
-        //  `(a % m) % m * (a % m) % m .. * (a % m) % m`
+        //  `(a % m) * (a % m) .. * (a % m) % m`
         let rhs = (0..(self.prime - 2)).fold(1, |exp, _| (exp * rhs.number) % self.prime);
 
         Ok(
