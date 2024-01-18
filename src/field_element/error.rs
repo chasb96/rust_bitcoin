@@ -1,9 +1,10 @@
 use std::{error::Error, fmt::Display};
+use num_bigint::BigUint;
 
 #[derive(Debug, Clone)]
 pub enum FieldError {
-    InvalidNumber(u32, u32),
-    MismatchPrimes(u32, u32),
+    InvalidNumber(BigUint, BigUint),
+    MismatchPrimes(BigUint, BigUint),
 }
 
 impl Error for FieldError { }
