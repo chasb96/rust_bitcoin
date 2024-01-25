@@ -1,3 +1,3 @@
 ## Rust Implementation of Bitcoin 
 ---
-Following along "Programming Bitcoin" O'Reilly book. Building an implementation of a cryptocurrency in Rust.
+Building an implementation of Bitcoin in Rust, following along "Programming Bitcoin" by Jimmy Song.

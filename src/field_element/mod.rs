@@ -5,7 +5,6 @@ use num_bigint::BigUint;
 use self::error::FieldError;
 
 pub mod error;
-pub mod secp256k1;
 
 #[derive(Debug, Clone)]
 pub struct FieldElement {
