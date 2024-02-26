@@ -124,6 +124,29 @@ impl Mul<u32> for Point {
     }
 }
 
+impl Mul<BigUint> for Point {
+    type Output = Result<Point, PointError>;
+
+    fn mul(mut self, mut rhs: BigUint) -> Self::Output {
+        let zero = BigUint::from_slice(&[0x00000000]);
+        let one = BigUint::from_slice(&[0x00000001]);
+
+        let mut result = Point::identity(self.curve.clone());
+
+        while rhs > zero {
+            if rhs.clone() & one.clone() == one {
+                result = (result + self.clone())?;
+            }
+
+            self = (self.clone() + self)?;
+
+            rhs = rhs >> 1;
+        }
+
+        Ok(result)
+    }
+}
+
 impl PartialEq for Point {
     fn eq(&self, other: &Self) -> bool {
         self.x == other.x && self.y == other.y && self.curve == other.curve

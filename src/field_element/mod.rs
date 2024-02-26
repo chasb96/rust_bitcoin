@@ -1,10 +1,11 @@
 use std::{ops::{Add, Sub, Mul, Div}, cmp::Ordering, fmt::Display};
-
 use num_bigint::BigUint;
-
 use self::error::FieldError;
 
 pub mod error;
+mod s256field;
+
+pub use s256field::S256Field;
 
 #[derive(Debug, Clone)]
 pub struct FieldElement {
