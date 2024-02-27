@@ -4,7 +4,8 @@ use crate::field_element::FieldElement;
 mod error;
 mod point;
 mod signature;
-mod s256point;
+mod bitcoin_curve;
+mod bitcoin_point;
 
 #[derive(Clone, Debug)]
 pub struct Curve {

@@ -59,49 +59,42 @@ impl Add for Point {
             return Ok(Self::identity(self.curve.clone()))
         }
 
-        match self == rhs {
-            true => add_eq(self),
-            false => add_ne(self, rhs),
+        if self == rhs {
+            let (x1, y1, a) = (self.x.unwrap(), self.y.unwrap(), &self.curve.a);
+
+            if y1.number() == &BigUint::from(0u32) {
+                return Ok(Point::infinity(self.curve.clone()))
+            }
+        
+            let three = FieldElement::new(3u32, x1.prime().to_owned())?;
+            let two = FieldElement::new(2u32, x1.prime().to_owned())?;
+        
+            let slope = ((three * x1.pow(2u32)) + a) / (&two * &y1)?;
+            let slope = slope?;
+        
+            let x3 = slope.pow(2u32) - (two * &x1);
+            let x3 = x3?;
+        
+            let y3 = (slope * (x1 - &x3)) - y1;
+        
+            Point::new_point(Some(x3), Some(y3?), self.curve.clone())
+        } else {
+            let (x1, x2) = (self.x.unwrap(), rhs.x.unwrap());
+            let (y1, y2) = (self.y.unwrap(), rhs.y.unwrap());
+
+            let x_diff = &x2 - &x1;
+            let y_diff = &y2 - &y1;
+
+            let slope = (y_diff? / x_diff?)?;
+
+            let x3 = (slope.pow(2u32) - &x1) - x2;
+            let x3 = x3?;
+
+            let y3 = (slope * (x1 - &x3)) - y1;
+
+            Point::new_point(Some(x3), Some(y3?), self.curve.clone())
         }
     }
-}
-
-fn add_ne(p1: Point, p2: Point) -> Result<Point, PointError> {
-    let (x1, x2) = (p1.x.unwrap(), p2.x.unwrap());
-    let (y1, y2) = (p1.y.unwrap(), p2.y.unwrap());
-
-    let x_diff = &x2 - &x1;
-    let y_diff = &y2 - &y1;
-
-    let slope = (y_diff? / x_diff?)?;
-
-    let x3 = (slope.pow(2u32) - &x1) - x2;
-    let x3 = x3?;
-
-    let y3 = (slope * (x1 - &x3)) - y1;
-
-    Point::new_point(Some(x3), Some(y3?), p1.curve.clone())
-}
-
-fn add_eq(p: Point) -> Result<Point, PointError> {
-    let (x1, y1, a) = (p.x.unwrap(), p.y.unwrap(), &p.curve.a);
-
-    if y1.number() == &BigUint::from(0u32) {
-        return Ok(Point::infinity(p.curve.clone()))
-    }
-
-    let three = FieldElement::new(3u32, x1.prime().to_owned())?;
-    let two = FieldElement::new(2u32, x1.prime().to_owned())?;
-
-    let slope = ((three * x1.pow(2u32)) + a) / (&two * &y1)?;
-    let slope = slope?;
-
-    let x3 = slope.pow(2u32) - (two * &x1);
-    let x3 = x3?;
-
-    let y3 = (slope * (x1 - &x3)) - y1;
-
-    Point::new_point(Some(x3), Some(y3?), p.curve.clone())
 }
 
 impl Mul<u32> for Point {

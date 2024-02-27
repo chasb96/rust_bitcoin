@@ -3,9 +3,9 @@ use num_bigint::BigUint;
 use self::error::FieldError;
 
 pub mod error;
-mod s256field;
+mod bitcoin_field_element;
 
-pub use s256field::S256Field;
+pub use bitcoin_field_element::BitcoinFieldElement;
 
 #[derive(Debug, Clone)]
 pub struct FieldElement {
