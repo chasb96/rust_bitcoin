@@ -1,7 +1,7 @@
 use std::ops::{Add, Mul};
 use num_bigint::BigUint;
-use crate::field_element::FieldElement;
-use super::{Curve, error::PointError};
+use crate::cryptography::{field_element::FieldElement, signature::Signature, BITCOIN_SECP256K1_CONFIG};
+use super::{bitcoin_point::BitcoinPoint, error::PointError, Curve};
 
 #[derive(Clone, Debug)]
 pub struct Point {
@@ -25,13 +25,11 @@ impl Point {
             }
         }
 
-        Ok(
-            Self {
-                x,
-                y,
-                curve,
-            }
-        )
+        Ok(Self {
+            x,
+            y,
+            curve,
+        })
     }
 
     pub fn identity(curve: Curve) -> Self {
@@ -44,6 +42,29 @@ impl Point {
 
     pub fn is_identity(&self) -> bool {
         self.x.is_none() && self.y.is_none()
+    }
+
+    pub fn x(&self) -> &Option<FieldElement> {
+        &self.x
+    }
+
+    pub fn verify_signature(&self, z: &BigUint, signature: &Signature) -> Result<bool, PointError> {
+        let n = BigUint::from_slice(&BITCOIN_SECP256K1_CONFIG.n);
+        let g = BitcoinPoint::g();
+        let two = BigUint::from_slice(&[0x00000002]);
+
+        let s_inverse = signature.s().modpow(&(n.clone() - two), &n.clone());
+        let u = z * s_inverse.clone() % n.clone();
+        let v = signature.r() * s_inverse % n;
+
+        let ug: Point = (g * u)?.into();
+        let vp = (self * v)?;
+        let total: Point = (ug + vp)?; 
+
+        match total.x {
+            Some(x) => Ok(x.number() == signature.r()),
+            None => Ok(false),
+        }
     }
 }
 
@@ -117,6 +138,14 @@ impl Mul<u32> for Point {
     }
 }
 
+impl Mul<BigUint> for &Point {
+    type Output = Result<Point, PointError>;
+
+    fn mul(self, rhs: BigUint) -> Self::Output {
+        self.clone() * rhs
+    }
+}
+
 impl Mul<BigUint> for Point {
     type Output = Result<Point, PointError>;
 
@@ -148,7 +177,7 @@ impl PartialEq for Point {
 
 #[cfg(test)]
 mod test {
-    use crate::{elliptic_curve::Curve, field_element::FieldElement};
+    use crate::cryptography::{elliptic_curve::Curve, field_element::FieldElement};
     use super::Point;
 
     #[test]

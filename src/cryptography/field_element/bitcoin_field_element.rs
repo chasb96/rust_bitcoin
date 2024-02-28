@@ -1,6 +1,6 @@
 use std::{fmt::Display, ops::{Add, Div, Mul, Sub}};
 use num_bigint::BigUint;
-use crate::BITCOIN_SECP256K1_CONFIG;
+use crate::cryptography::BITCOIN_SECP256K1_CONFIG;
 use super::{error::FieldError, FieldElement};
 
 pub struct BitcoinFieldElement(FieldElement);

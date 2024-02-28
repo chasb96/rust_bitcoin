@@ -1,11 +1,10 @@
 use std::fmt::Display;
-use crate::field_element::FieldElement;
+use super::field_element::FieldElement;
 
-mod error;
-mod point;
-mod signature;
-mod bitcoin_curve;
-mod bitcoin_point;
+pub mod error;
+pub mod point;
+pub mod bitcoin_curve;
+pub mod bitcoin_point;
 
 #[derive(Clone, Debug)]
 pub struct Curve {
@@ -36,7 +35,7 @@ impl PartialEq for Curve {
 
 #[cfg(test)]
 mod test {
-    use crate::field_element::FieldElement;
+    use crate::cryptography::field_element::FieldElement;
     use super::{Curve, point::Point};
 
 

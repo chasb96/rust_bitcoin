@@ -1,5 +1,6 @@
 use std::{error::Error, fmt::Display};
-use crate::field_element::{FieldElement, error::FieldError};
+use crate::cryptography::field_element::{error::FieldError, FieldElement};
+
 use super::Curve;
 
 #[derive(Debug)]

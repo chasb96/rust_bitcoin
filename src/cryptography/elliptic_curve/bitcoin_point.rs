@@ -1,6 +1,6 @@
 use std::ops::{Add, Mul};
 use num_bigint::BigUint;
-use crate::{field_element::FieldElement, BITCOIN_SECP256K1_CONFIG};
+use crate::cryptography::{field_element::{bitcoin_field_element::BitcoinFieldElement, FieldElement}, BITCOIN_SECP256K1_CONFIG};
 use super::{bitcoin_curve::BitcoinCurve, error::PointError, point::Point, Curve};
 
 pub struct BitcoinPoint(Point);
@@ -11,6 +11,16 @@ impl BitcoinPoint {
         let point = Point::new(x, y, curve)?;
 
         Ok(Self(point))
+    }
+
+    pub fn g() -> Self {
+        let gx = BigUint::from_slice(&BITCOIN_SECP256K1_CONFIG.gx);
+        let gy = BigUint::from_slice(&BITCOIN_SECP256K1_CONFIG.gy);
+
+        let x = BitcoinFieldElement::new(gx).unwrap().into();
+        let y = BitcoinFieldElement::new(gy).unwrap().into();
+
+        Self::new(x, y).unwrap()
     }
 
     pub fn identity(curve: Curve) -> Self {

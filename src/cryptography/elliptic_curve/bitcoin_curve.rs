@@ -1,5 +1,6 @@
 use num_bigint::BigUint;
-use crate::{field_element::BitcoinFieldElement, BITCOIN_SECP256K1_CONFIG};
+use crate::cryptography::{field_element::bitcoin_field_element::BitcoinFieldElement, BITCOIN_SECP256K1_CONFIG};
+
 use super::Curve;
 
 pub struct BitcoinCurve(Curve);

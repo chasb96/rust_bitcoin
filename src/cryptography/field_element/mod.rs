@@ -3,9 +3,7 @@ use num_bigint::BigUint;
 use self::error::FieldError;
 
 pub mod error;
-mod bitcoin_field_element;
-
-pub use bitcoin_field_element::BitcoinFieldElement;
+pub mod bitcoin_field_element;
 
 #[derive(Debug, Clone)]
 pub struct FieldElement {
