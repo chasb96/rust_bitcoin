@@ -42,29 +42,21 @@ impl Into<Point> for BitcoinPoint {
     }
 }
 
-impl Add for BitcoinPoint {
+impl Add for &BitcoinPoint {
     type Output = Result<BitcoinPoint, PointError>;
 
     fn add(self, rhs: Self) -> Self::Output {
-        Ok(BitcoinPoint((self.0 + rhs.0)?))
+        Ok(BitcoinPoint((&self.0 + &rhs.0)?))
     }
 }
 
-impl Mul<u32> for BitcoinPoint {
+impl<'a, T: Into<&'a BigUint>> Mul<T> for BitcoinPoint {
     type Output = Result<BitcoinPoint, PointError>;
 
-    fn mul(self, rhs: u32) -> Self::Output {
-        Ok(BitcoinPoint((self.0 * rhs)?))
-    }
-}
+    fn mul(self, rhs: T) -> Self::Output {
+        let rhs = rhs.into() % BigUint::from_slice(&BITCOIN_SECP256K1_CONFIG.n);
 
-impl Mul<BigUint> for BitcoinPoint {
-    type Output = Result<BitcoinPoint, PointError>;
-
-    fn mul(self, mut rhs: BigUint) -> Self::Output {
-        rhs = rhs % BigUint::from_slice(&BITCOIN_SECP256K1_CONFIG.n);
-
-        Ok(BitcoinPoint((self.0 * rhs)?))
+        Ok(BitcoinPoint((&self.0 * &rhs)?))
     }
 }
 

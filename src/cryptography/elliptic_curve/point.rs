@@ -18,7 +18,7 @@ impl Point {
     fn new_point(x: Option<FieldElement>, y: Option<FieldElement>, curve: Curve) -> Result<Self, PointError> {
         if let (Some(xp), Some(yp)) = (&x, &y) {
             let lhs = yp.pow(2u32);
-            let rhs = &curve.b + (xp.pow(3u32) + &curve.a * xp);
+            let rhs = &curve.b + &(&xp.pow(3u32) + &(&curve.a * xp)?)?;
 
             if lhs != rhs? {
                 return Err(PointError::NotOnCurve(xp.clone(), yp.clone(), curve.clone()));
@@ -51,15 +51,15 @@ impl Point {
     pub fn verify_signature(&self, z: &BigUint, signature: &Signature) -> Result<bool, PointError> {
         let n = BigUint::from_slice(&BITCOIN_SECP256K1_CONFIG.n);
         let g = BitcoinPoint::g();
-        let two = BigUint::from_slice(&[0x00000002]);
+        let two = BigUint::from(2u32);
 
-        let s_inverse = signature.s().modpow(&(n.clone() - two), &n.clone());
-        let u = z * s_inverse.clone() % n.clone();
+        let s_inverse = signature.s().modpow(&(&n - two), &n);
+        let u = z * &s_inverse % &n;
         let v = signature.r() * s_inverse % n;
 
-        let ug: Point = (g * u)?.into();
-        let vp = (self * v)?;
-        let total: Point = (ug + vp)?; 
+        let ug: Point = (g * &u)?.into();
+        let vp = (self * &v)?;
+        let total: Point = (&ug + &vp)?; 
 
         match total.x {
             Some(x) => Ok(x.number() == signature.r()),
@@ -68,20 +68,20 @@ impl Point {
     }
 }
 
-impl Add for Point {
+impl Add for &Point {
     type Output = Result<Point, PointError>;
 
     fn add(self, rhs: Self) -> Self::Output {
         if self.curve != rhs.curve {
-            return Err(PointError::MismatchCurves(self.curve, rhs.curve));
+            return Err(PointError::MismatchCurves(self.curve.clone(), rhs.curve.clone()));
         }
 
         if self.is_identity() || rhs.is_identity() {
-            return Ok(Self::identity(self.curve.clone()))
+            return Ok(Point::identity(self.curve.clone()))
         }
 
         if self == rhs {
-            let (x1, y1, a) = (self.x.unwrap(), self.y.unwrap(), &self.curve.a);
+            let (x1, y1, a) = (self.x.as_ref().unwrap(), self.y.as_ref().unwrap(), &self.curve.a);
 
             if y1.number() == &BigUint::from(0u32) {
                 return Ok(Point::infinity(self.curve.clone()))
@@ -90,77 +90,52 @@ impl Add for Point {
             let three = FieldElement::new(3u32, x1.prime().to_owned())?;
             let two = FieldElement::new(2u32, x1.prime().to_owned())?;
         
-            let slope = ((three * x1.pow(2u32)) + a) / (&two * &y1)?;
+            let slope = &(a + &(&three * &x1.pow(2u32))?)? / &(&two * y1)?;
             let slope = slope?;
         
-            let x3 = slope.pow(2u32) - (two * &x1);
+            let x3 = &slope.pow(2u32) - &(&two * x1)?;
             let x3 = x3?;
         
-            let y3 = (slope * (x1 - &x3)) - y1;
+            let y3 = &(&slope * &(x1 - &x3)?)? - y1;
         
             Point::new_point(Some(x3), Some(y3?), self.curve.clone())
         } else {
-            let (x1, x2) = (self.x.unwrap(), rhs.x.unwrap());
-            let (y1, y2) = (self.y.unwrap(), rhs.y.unwrap());
+            let (x1, x2) = (self.x.as_ref().unwrap(), rhs.x.as_ref().unwrap());
+            let (y1, y2) = (self.y.as_ref().unwrap(), rhs.y.as_ref().unwrap());
 
-            let x_diff = &x2 - &x1;
-            let y_diff = &y2 - &y1;
+            let x_diff = x2 - x1;
+            let y_diff = y2 - y1;
 
-            let slope = (y_diff? / x_diff?)?;
+            let slope = (&y_diff? / &x_diff?)?;
 
-            let x3 = (slope.pow(2u32) - &x1) - x2;
+            let x3 = &(&slope.pow(2u32) - x1)? - x2;
             let x3 = x3?;
 
-            let y3 = (slope * (x1 - &x3)) - y1;
+            let y3 = &(&slope * &(x1 - &x3)?)? - y1;
 
             Point::new_point(Some(x3), Some(y3?), self.curve.clone())
         }
     }
 }
 
-impl Mul<u32> for Point {
+impl<'a, T: Into<&'a BigUint>> Mul<T> for &Point {
     type Output = Result<Point, PointError>;
 
-    fn mul(mut self, mut rhs: u32) -> Self::Output {
-        let mut result = Point::identity(self.curve.clone());
+    fn mul(self, rhs: T) -> Self::Output {
+        let mut lhs = self.clone();
+        let mut rhs = rhs.into().clone();
 
-        while rhs > 0 {
-            if rhs & 1 == 1 {
-                result = (result + self.clone())?;
-            }
-
-            self = (self.clone() + self)?;
-
-            rhs = rhs >> 1;
-        }
-
-        Ok(result)
-    }
-}
-
-impl Mul<BigUint> for &Point {
-    type Output = Result<Point, PointError>;
-
-    fn mul(self, rhs: BigUint) -> Self::Output {
-        self.clone() * rhs
-    }
-}
-
-impl Mul<BigUint> for Point {
-    type Output = Result<Point, PointError>;
-
-    fn mul(mut self, mut rhs: BigUint) -> Self::Output {
         let zero = BigUint::from_slice(&[0x00000000]);
         let one = BigUint::from_slice(&[0x00000001]);
 
-        let mut result = Point::identity(self.curve.clone());
+        let mut result = Point::identity(lhs.curve.clone());
 
         while rhs > zero {
-            if rhs.clone() & one.clone() == one {
-                result = (result + self.clone())?;
+            if &rhs & &one == one {
+                result = (&result + &lhs)?;
             }
 
-            self = (self.clone() + self)?;
+            lhs = (&lhs + &lhs)?;
 
             rhs = rhs >> 1;
         }
@@ -249,7 +224,7 @@ mod test {
         let p1 = Point::new(ax, ay, curve.clone()).unwrap();
         let p2 = Point::new(bx, by, curve).unwrap();
 
-        (p1 + p2).unwrap();
+        (&p1 + &p2).unwrap();
     }
 
     #[test]
@@ -272,7 +247,7 @@ mod test {
         let cy = FieldElement::new(142u32, prime).unwrap();
 
         let expected = Point::new(cx, cy, curve).unwrap();
-        let actual = (p1 + p2).unwrap();
+        let actual = (&p1 + &p2).unwrap();
 
         assert_eq!(expected, actual)
     }
@@ -296,7 +271,7 @@ mod test {
         let p1 = Point::new(ax, ay, curvea).unwrap();
         let p2 = Point::new(bx, by, curveb).unwrap();
 
-        let p1p2 = p1 + p2;
+        let p1p2 = &p1 + &p2;
 
         assert!(p1p2.is_err());
     }
@@ -317,7 +292,7 @@ mod test {
         let p1 = Point::new(ax, ay, curve.clone()).unwrap();
         let p2 = Point::new(bx, by, curve).unwrap();
 
-        (p1 + p2).unwrap();
+        (&p1 + &p2).unwrap();
     }
 
     #[test]
@@ -334,7 +309,7 @@ mod test {
         let p = Point::new(ax, ay, curve).unwrap();
         let identity = Point::identity(Curve::new(a, b));
 
-        assert!((p.clone() + identity.clone()).unwrap().is_identity());
-        assert!((identity + p).unwrap().is_identity());
+        assert!((&p + &identity).unwrap().is_identity());
+        assert!((&identity + &p).unwrap().is_identity());
     }
 }

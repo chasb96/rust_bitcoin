@@ -50,66 +50,10 @@ impl PartialEq for FieldElement {
     }
 }
 
-impl Add for FieldElement {
+impl Add for &FieldElement {
     type Output = Result<FieldElement, FieldError>;
 
     fn add(self, rhs: Self) -> Self::Output {
-        &self + &rhs
-    }
-}
-
-impl Add<&FieldElement> for FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn add(self, rhs: &FieldElement) -> Self::Output {
-        &self + rhs
-    }
-}
-
-impl Add<FieldElement> for &FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn add(self, rhs: FieldElement) -> Self::Output {
-        self + &rhs
-    }
-}
-
-impl Add<Result<FieldElement, FieldError>> for FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn add(self, rhs: Result<FieldElement, FieldError>) -> Self::Output {
-        &self + &rhs?
-    }
-}
-
-impl Add<Result<FieldElement, FieldError>> for &FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn add(self, rhs: Result<FieldElement, FieldError>) -> Self::Output {
-        self + &rhs?
-    }
-}
-
-impl Add<FieldElement> for Result<FieldElement, FieldError> {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn add(self, rhs: FieldElement) -> Self::Output {
-        &self? + &rhs
-    }
-}
-
-impl Add<&FieldElement> for Result<FieldElement, FieldError> {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn add(self, rhs: &FieldElement) -> Self::Output {
-        &self? + rhs
-    }
-}
-
-impl Add<&FieldElement> for &FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn add(self, rhs: &FieldElement) -> Self::Output {
         if &self.prime != &rhs.prime {
             return Err(FieldError::MismatchPrimes(self.prime.clone(), rhs.prime.clone()));
         }
@@ -123,66 +67,10 @@ impl Add<&FieldElement> for &FieldElement {
     }
 }
 
-impl Sub for FieldElement {
+impl Sub for &FieldElement {
     type Output = Result<FieldElement, FieldError>;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        &self - &rhs
-    }
-}
-
-impl Sub<&FieldElement> for FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn sub(self, rhs: &FieldElement) -> Self::Output {
-        &self - rhs
-    }
-}
-
-impl Sub<FieldElement> for &FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn sub(self, rhs: FieldElement) -> Self::Output {
-        self - &rhs
-    }
-}
-
-impl Sub<Result<FieldElement, FieldError>> for FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn sub(self, rhs: Result<FieldElement, FieldError>) -> Self::Output {
-        &self - &rhs?
-    }
-}
-
-impl Sub<Result<FieldElement, FieldError>> for &FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn sub(self, rhs: Result<FieldElement, FieldError>) -> Self::Output {
-        self - &rhs?
-    }
-}
-
-impl Sub<FieldElement> for Result<FieldElement, FieldError> {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn sub(self, rhs: FieldElement) -> Self::Output {
-        &self? - &rhs
-    }
-}
-
-impl Sub<&FieldElement> for Result<FieldElement, FieldError> {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn sub(self, rhs: &FieldElement) -> Self::Output {
-        &self? - rhs
-    }
-}
-
-impl Sub<&FieldElement> for &FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn sub(self, rhs: &FieldElement) -> Self::Output {
         if &self.prime != &rhs.prime {
             return Err(FieldError::MismatchPrimes(self.prime.clone(), rhs.prime.clone()));
         }
@@ -202,50 +90,10 @@ impl Sub<&FieldElement> for &FieldElement {
     }
 }
 
-impl Mul for FieldElement {
+impl Mul for &FieldElement {
     type Output = Result<FieldElement, FieldError>;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        &self * rhs
-    }
-}
-
-impl Mul<&FieldElement> for FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn mul(self, rhs: &FieldElement) -> Self::Output {
-        &self * rhs
-    }
-}
-
-impl Mul<FieldElement> for &FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn mul(self, rhs: FieldElement) -> Self::Output {
-        self * &rhs
-    }
-}
-
-impl Mul<Result<FieldElement, FieldError>> for FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn mul(self, rhs: Result<FieldElement, FieldError>) -> Self::Output {
-        &self * &rhs?
-    }
-}
-
-impl Mul<Result<FieldElement, FieldError>> for &FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn mul(self, rhs: Result<FieldElement, FieldError>) -> Self::Output {        
-        self * &rhs?
-    }
-}
-
-impl Mul<&FieldElement> for &FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn mul(self, rhs: &FieldElement) -> Self::Output {
         if self.prime != rhs.prime {
             return Err(FieldError::MismatchPrimes(self.prime.clone(), rhs.prime.clone()));
         }
@@ -259,63 +107,7 @@ impl Mul<&FieldElement> for &FieldElement {
     }
 }
 
-impl Div<FieldElement> for FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn div(self, rhs: FieldElement) -> Self::Output {
-        &self / &rhs
-    }
-}
-
-impl Div<&FieldElement> for FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn div(self, rhs: &FieldElement) -> Self::Output {
-        &self / rhs
-    }
-}
-
-impl Div<FieldElement> for &FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn div(self, rhs: FieldElement) -> Self::Output {
-        self / &rhs
-    }
-}
-
-impl Div<Result<FieldElement, FieldError>> for FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn div(self, rhs: Result<FieldElement, FieldError>) -> Self::Output {
-        &self / &rhs?
-    }
-}
-
-impl Div<Result<FieldElement, FieldError>> for &FieldElement {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn div(self, rhs: Result<FieldElement, FieldError>) -> Self::Output {
-        self / &rhs?
-    }
-}
-
-impl Div<FieldElement> for Result<FieldElement, FieldError> {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn div(self, rhs: FieldElement) -> Self::Output {
-        &self? / &rhs
-    }
-}
-
-impl Div<&FieldElement> for Result<FieldElement, FieldError> {
-    type Output = Result<FieldElement, FieldError>;
-
-    fn div(self, rhs: &FieldElement) -> Self::Output {
-        &self? / rhs
-    }
-}
-
-impl Div<&FieldElement> for &FieldElement {
+impl Div for &FieldElement {
     type Output = Result<FieldElement, FieldError>;
 
     fn div(self, rhs: &FieldElement) -> Self::Output {
@@ -377,7 +169,7 @@ mod test {
         let f1 = FieldElement::new(12u32, 13u32).unwrap();
         let f2 = FieldElement::new(11u32, 13u32).unwrap();
 
-        let f3 = (f1 + f2).unwrap();
+        let f3 = (&f1 + &f2).unwrap();
 
         assert_eq!(f3.number, BigUint::from(10u32));
     }
@@ -387,7 +179,7 @@ mod test {
         let f1 = FieldElement::new(12u32, 13u32).unwrap();
         let f2 = FieldElement::new(11u32, 12u32).unwrap();
 
-        assert!((f1 + f2).is_err());
+        assert!((&f1 + &f2).is_err());
     }
 
     #[test]
@@ -395,7 +187,7 @@ mod test {
         let f1 = FieldElement::new(5u32, 13u32).unwrap();
         let f2 = FieldElement::new(8u32, 13u32).unwrap();
 
-        let f3 = (f1 - f2).unwrap();
+        let f3 = (&f1 - &f2).unwrap();
 
         assert_eq!(f3.number, BigUint::from(10u32));
     }
@@ -405,7 +197,7 @@ mod test {
         let f1 = FieldElement::new(12u32, 13u32).unwrap();
         let f2 = FieldElement::new(11u32, 12u32).unwrap();
 
-        assert!((f1 - f2).is_err());
+        assert!((&f1 - &f2).is_err());
     }
 
     #[test]
@@ -413,7 +205,7 @@ mod test {
         let f1 = FieldElement::new(5u32, 13u32).unwrap();
         let f2 = FieldElement::new(10u32, 13u32).unwrap();
 
-        let f3 = (f1 * f2).unwrap();
+        let f3 = (&f1 * &f2).unwrap();
 
         assert_eq!(f3.number, BigUint::from(11u32));
     }
@@ -423,7 +215,7 @@ mod test {
         let f1 = FieldElement::new(12u32, 13u32).unwrap();
         let f2 = FieldElement::new(11u32, 12u32).unwrap();
 
-        assert!((f1 * f2).is_err());
+        assert!((&f1 * &f2).is_err());
     }
 
     #[test]
@@ -431,7 +223,7 @@ mod test {
         let f1 = FieldElement::new(10u32, 13u32).unwrap();
         let f2 = FieldElement::new(5u32, 13u32).unwrap();
 
-        let f3 = (f1 / f2).unwrap();
+        let f3 = (&f1 / &f2).unwrap();
 
         assert_eq!(f3.number, BigUint::from(2u32));
     }
@@ -441,6 +233,6 @@ mod test {
         let f1 = FieldElement::new(12u32, 13u32).unwrap();
         let f2 = FieldElement::new(11u32, 12u32).unwrap();
 
-        assert!((f1 / f2).is_err());
+        assert!((&f1 / &f2).is_err());
     }
 }
