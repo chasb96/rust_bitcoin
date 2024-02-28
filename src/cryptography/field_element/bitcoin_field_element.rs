@@ -38,242 +38,34 @@ impl PartialEq for BitcoinFieldElement {
     }
 }
 
-impl Add for BitcoinFieldElement {
+impl Add for &BitcoinFieldElement {
     type Output = Result<BitcoinFieldElement, FieldError>;
 
     fn add(self, rhs: Self) -> Self::Output {
-        &self + &rhs
-    }
-}
-
-impl Add<&BitcoinFieldElement> for BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn add(self, rhs: &BitcoinFieldElement) -> Self::Output {
-        &self + rhs
-    }
-}
-
-impl Add<BitcoinFieldElement> for &BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn add(self, rhs: BitcoinFieldElement) -> Self::Output {
-        self + &rhs
-    }
-}
-
-impl Add<Result<BitcoinFieldElement, FieldError>> for BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn add(self, rhs: Result<BitcoinFieldElement, FieldError>) -> Self::Output {
-        &self + &rhs?
-    }
-}
-
-impl Add<Result<BitcoinFieldElement, FieldError>> for &BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn add(self, rhs: Result<BitcoinFieldElement, FieldError>) -> Self::Output {
-        self + &rhs?
-    }
-}
-
-impl Add<BitcoinFieldElement> for Result<BitcoinFieldElement, FieldError> {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn add(self, rhs: BitcoinFieldElement) -> Self::Output {
-        &self? + &rhs
-    }
-}
-
-impl Add<&BitcoinFieldElement> for Result<BitcoinFieldElement, FieldError> {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn add(self, rhs: &BitcoinFieldElement) -> Self::Output {
-        &self? + rhs
-    }
-}
-
-impl Add<&BitcoinFieldElement> for &BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn add(self, rhs: &BitcoinFieldElement) -> Self::Output {
         Ok(BitcoinFieldElement((&self.0 + &rhs.0)?))
     }
 }
 
-impl Sub for BitcoinFieldElement {
+impl Sub for &BitcoinFieldElement {
     type Output = Result<BitcoinFieldElement, FieldError>;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        &self - &rhs
-    }
-}
-
-impl Sub<&BitcoinFieldElement> for BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn sub(self, rhs: &BitcoinFieldElement) -> Self::Output {
-        &self - rhs
-    }
-}
-
-impl Sub<BitcoinFieldElement> for &BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn sub(self, rhs: BitcoinFieldElement) -> Self::Output {
-        self - &rhs
-    }
-}
-
-impl Sub<Result<BitcoinFieldElement, FieldError>> for BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn sub(self, rhs: Result<BitcoinFieldElement, FieldError>) -> Self::Output {
-        &self - &rhs?
-    }
-}
-
-impl Sub<Result<BitcoinFieldElement, FieldError>> for &BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn sub(self, rhs: Result<BitcoinFieldElement, FieldError>) -> Self::Output {
-        self - &rhs?
-    }
-}
-
-impl Sub<BitcoinFieldElement> for Result<BitcoinFieldElement, FieldError> {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn sub(self, rhs: BitcoinFieldElement) -> Self::Output {
-        &self? - &rhs
-    }
-}
-
-impl Sub<&BitcoinFieldElement> for Result<BitcoinFieldElement, FieldError> {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn sub(self, rhs: &BitcoinFieldElement) -> Self::Output {
-        &self? - rhs
-    }
-}
-
-impl Sub<&BitcoinFieldElement> for &BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn sub(self, rhs: &BitcoinFieldElement) -> Self::Output {
         Ok(BitcoinFieldElement((&self.0 - &rhs.0)?))
     }
 }
 
-impl Mul for BitcoinFieldElement {
+impl Mul for &BitcoinFieldElement {
     type Output = Result<BitcoinFieldElement, FieldError>;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        &self * rhs
-    }
-}
-
-impl Mul<&BitcoinFieldElement> for BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn mul(self, rhs: &BitcoinFieldElement) -> Self::Output {
-        &self * rhs
-    }
-}
-
-impl Mul<BitcoinFieldElement> for &BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn mul(self, rhs: BitcoinFieldElement) -> Self::Output {
-        self * &rhs
-    }
-}
-
-impl Mul<Result<BitcoinFieldElement, FieldError>> for BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn mul(self, rhs: Result<BitcoinFieldElement, FieldError>) -> Self::Output {
-        &self * &rhs?
-    }
-}
-
-impl Mul<Result<BitcoinFieldElement, FieldError>> for &BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn mul(self, rhs: Result<BitcoinFieldElement, FieldError>) -> Self::Output {        
-        self * &rhs?
-    }
-}
-
-impl Mul<&BitcoinFieldElement> for &BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn mul(self, rhs: &BitcoinFieldElement) -> Self::Output {
         Ok(BitcoinFieldElement((&self.0 * &rhs.0)?))
     }
 }
 
-impl Div<BitcoinFieldElement> for BitcoinFieldElement {
+impl Div for &BitcoinFieldElement {
     type Output = Result<BitcoinFieldElement, FieldError>;
 
-    fn div(self, rhs: BitcoinFieldElement) -> Self::Output {
-        &self / &rhs
-    }
-}
-
-impl Div<&BitcoinFieldElement> for BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn div(self, rhs: &BitcoinFieldElement) -> Self::Output {
-        &self / rhs
-    }
-}
-
-impl Div<BitcoinFieldElement> for &BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn div(self, rhs: BitcoinFieldElement) -> Self::Output {
-        self / &rhs
-    }
-}
-
-impl Div<Result<BitcoinFieldElement, FieldError>> for BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn div(self, rhs: Result<BitcoinFieldElement, FieldError>) -> Self::Output {
-        &self / &rhs?
-    }
-}
-
-impl Div<Result<BitcoinFieldElement, FieldError>> for &BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn div(self, rhs: Result<BitcoinFieldElement, FieldError>) -> Self::Output {
-        self / &rhs?
-    }
-}
-
-impl Div<BitcoinFieldElement> for Result<BitcoinFieldElement, FieldError> {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn div(self, rhs: BitcoinFieldElement) -> Self::Output {
-        &self? / &rhs
-    }
-}
-
-impl Div<&BitcoinFieldElement> for Result<BitcoinFieldElement, FieldError> {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn div(self, rhs: &BitcoinFieldElement) -> Self::Output {
-        &self? / rhs
-    }
-}
-
-impl Div<&BitcoinFieldElement> for &BitcoinFieldElement {
-    type Output = Result<BitcoinFieldElement, FieldError>;
-
-    fn div(self, rhs: &BitcoinFieldElement) -> Self::Output {
+    fn div(self, rhs: Self) -> Self::Output {
         Ok(BitcoinFieldElement((&self.0 / &rhs.0)?))
     }
 }

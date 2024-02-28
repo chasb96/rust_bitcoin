@@ -11,7 +11,7 @@ impl BitcoinPrivateKey {
         Ok(Self(PrivateKey::new(secret, g, n)?))
     }
 
-    pub fn sign(&self, z: BigUint) -> Result<Signature,  PointError> {
+    pub fn sign<'a>(&self, z: impl Into<&'a BigUint>) -> Result<Signature,  PointError> {
         self.0.sign(z)
     }
 }

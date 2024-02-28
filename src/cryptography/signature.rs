@@ -7,8 +7,11 @@ pub struct Signature {
 }
 
 impl Signature {
-    pub fn new(r: BigUint, s: BigUint) -> Self {
-        Self { r, s }
+    pub fn new(r: impl Into<BigUint>, s: impl Into<BigUint>) -> Self {
+        Self {
+            r: r.into(),
+            s: s.into()
+        }
     }
 
     pub fn s(&self) -> &BigUint {

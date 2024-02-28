@@ -48,7 +48,9 @@ impl Point {
         &self.x
     }
 
-    pub fn verify_signature(&self, z: &BigUint, signature: &Signature) -> Result<bool, PointError> {
+    pub fn verify_signature<'a>(&self, z: impl Into<&'a BigUint>, signature: Signature) -> Result<bool, PointError> {
+        let z = z.into();
+
         let n = BigUint::from_slice(&BITCOIN_SECP256K1_CONFIG.n);
         let g = BitcoinPoint::g();
         let two = BigUint::from(2u32);
