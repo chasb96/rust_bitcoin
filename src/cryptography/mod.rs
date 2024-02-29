@@ -1,5 +1,5 @@
-mod field_element;
-mod elliptic_curve;
+pub mod field_element;
+pub mod elliptic_curve;
 mod signature;
 mod private_key;
 mod random;

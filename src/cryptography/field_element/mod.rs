@@ -35,6 +35,10 @@ impl FieldElement {
         }
     }
 
+    pub fn sqrt(&self) -> FieldElement {
+        self.pow((&self.prime + BigUint::from(1u32)) / BigUint::from(4u32))
+    }
+
     pub fn number(&self) -> &BigUint {
         &self.number
     }

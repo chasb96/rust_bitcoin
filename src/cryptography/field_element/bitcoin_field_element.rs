@@ -13,8 +13,12 @@ impl BitcoinFieldElement {
         Ok(Self(field_element))
     }
 
-    pub fn pow(&self, pow: impl Into<BigUint>) -> FieldElement {
-        self.0.pow(pow)
+    pub fn pow(&self, pow: impl Into<BigUint>) -> BitcoinFieldElement {
+        Self(self.0.pow(pow))
+    }
+
+    pub fn sqrt(&self) -> BitcoinFieldElement {
+        Self(self.0.sqrt())
     }
 
     pub fn number(&self) -> &BigUint {

@@ -48,6 +48,10 @@ impl Point {
         &self.x
     }
 
+    pub fn y(&self) -> &Option<FieldElement> {
+        &self.y
+    }
+
     pub fn verify_signature<'a>(&self, z: impl Into<&'a BigUint>, signature: Signature) -> Result<bool, PointError> {
         let z = z.into();
 

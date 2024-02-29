@@ -1,16 +1,16 @@
 use std::ops::{Add, Mul};
 use num_bigint::BigUint;
 use crate::cryptography::{field_element::{bitcoin_field_element::BitcoinFieldElement, FieldElement}, BITCOIN_SECP256K1_CONFIG};
-use super::{bitcoin_curve::BitcoinCurve, error::PointError, point::Point, Curve};
+use super::{bitcoin_curve::BitcoinCurve, error::PointError, point::Point};
 
 pub struct BitcoinPoint(Point);
 
 impl BitcoinPoint {
-    pub fn new(x: FieldElement, y: FieldElement) -> Result<Self, PointError> {
+    pub fn new(x: BitcoinFieldElement, y: BitcoinFieldElement) -> Self {
         let curve = BitcoinCurve::new().into();
-        let point = Point::new(x, y, curve)?;
+        let point = Point::new(x.into(), y.into(), curve).unwrap();
 
-        Ok(Self(point))
+        Self(point)
     }
 
     pub fn g() -> Self {
@@ -20,19 +20,27 @@ impl BitcoinPoint {
         let x = BitcoinFieldElement::new(gx).unwrap().into();
         let y = BitcoinFieldElement::new(gy).unwrap().into();
 
-        Self::new(x, y).unwrap()
+        Self::new(x, y)
     }
 
-    pub fn identity(curve: Curve) -> Self {
-        BitcoinPoint(Point::identity(curve))
+    pub fn identity() -> Self {
+        BitcoinPoint(Point::identity(BitcoinCurve::new().into()))
     }
 
-    pub fn infinity(curve: Curve) -> Self {
-        BitcoinPoint(Point::infinity(curve))
+    pub fn infinity() -> Self {
+        BitcoinPoint(Point::infinity(BitcoinCurve::new().into()))
     }
 
     pub fn is_identity(&self) -> bool {
         self.0.is_identity()
+    }
+
+    pub fn x(&self) -> &Option<FieldElement> {
+        self.0.x()
+    }
+
+    pub fn y(&self) -> &Option<FieldElement> {
+        self.0.y()
     }
 }
 
