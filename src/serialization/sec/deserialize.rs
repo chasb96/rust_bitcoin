@@ -20,7 +20,7 @@ impl Display for DeserializeSECError {
 }
 
 pub trait DeserializeSEC: Sized {
-    fn deserialize_sec(s: String) -> Result<Self, DeserializeSECError>;
+    fn deserialize_sec<'a>(s: impl Into<&'a [u8]>) -> Result<Self, DeserializeSECError>;
 }
 
 impl From<FieldError> for DeserializeSECError {

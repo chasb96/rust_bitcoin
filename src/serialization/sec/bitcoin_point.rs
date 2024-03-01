@@ -20,8 +20,8 @@ impl SerializeSEC for BitcoinPoint {
 }
 
 impl DeserializeSEC for BitcoinPoint {
-    fn deserialize_sec(s: String) -> Result<Self, DeserializeSECError> {
-        let s_bytes = s.as_bytes();
+    fn deserialize_sec<'a>(s: impl Into<&'a [u8]>) -> Result<Self, DeserializeSECError> {
+        let s_bytes = s.into();
 
         if s_bytes.len() == 0 {
             return Err(DeserializeSECError::InvalidFormat);
