@@ -7,9 +7,9 @@ impl SerializeSEC for BitcoinPoint {
         let x = self.x().as_ref().ok_or(SerializeSECError)?.number();
         let y = self.y().as_ref().ok_or(SerializeSECError)?.number();
 
-        let y_odd = y % BigUint::from(2u32) == BigUint::from(0u32);
+        let y_even = y % BigUint::from(2u32) == BigUint::from(0u32);
 
-        let serialized = match (compressed, y_odd) {
+        let serialized = match (compressed, y_even) {
             (true, true) => format!("\x02{0}", hex::encode(x.to_bytes_be())),
             (true, false) => format!("\x03{0}", hex::encode(x.to_bytes_be())),
             (false, _) => format!("\x04{0}{1}", hex::encode(x.to_bytes_be()), hex::encode(y.to_bytes_be())),
